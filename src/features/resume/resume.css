@@ -1,0 +1,93 @@
+/* The résumé: a sheet laid over the desk and the drawer, under the top bar so
+   the button it came out of stays in reach. */
+
+.resume {
+  position: absolute;
+  inset: 0;
+  z-index: 85;
+  outline: none;
+}
+
+.resume__veil {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  opacity: 0;
+  will-change: opacity;
+}
+
+.resume__scroll {
+  position: absolute;
+  inset: 0;
+  padding: 74px 0 120px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.resume__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* the same paper as every other sheet, in the proportions of the PDF's page */
+.resume__paper {
+  width: min(820px, 100vw - 36px);
+  margin: 0 auto;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  /* the black backing sheet */
+  box-shadow: 10px 12px 0 0 var(--ink);
+}
+
+.resume__paper img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.resume__actions {
+  position: absolute;
+  inset: auto 0 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.resume__actions .cab__btn {
+  color: var(--ink);
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.resume__actions svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+}
+
+/* While it is on its way in or out, the sheet itself is hidden and its
+   picture on the canvas is what shows. */
+.resume:not([data-open]) .resume__paper {
+  visibility: hidden;
+}
+
+.resume:not([data-open]) .resume__actions .cab__btn {
+  pointer-events: none;
+}
+
+/* over the top bar, so the sheet is seen going into the button */
+.resume__genie {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

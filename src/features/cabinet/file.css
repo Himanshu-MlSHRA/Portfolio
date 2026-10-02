@@ -1,0 +1,139 @@
+/* A folder with its sheet in it — on the desk, in hand, or standing in the drawer. */
+
+/* drawn a little heavy, so the lines still read once the folder is scaled
+   down to stand in the drawer */
+.file__body {
+  position: relative;
+  box-sizing: border-box;
+  --line: 2.2px;
+}
+
+.file__top {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.file__fill {
+  fill: var(--card);
+}
+
+.file__line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: var(--line);
+  stroke-linejoin: round;
+}
+
+.file__ink {
+  fill: none;
+}
+
+.file__body--on .file__ink {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-width: var(--line);
+}
+
+.file__back {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card);
+  border: solid var(--ink);
+  border-width: 0 var(--line) var(--line);
+}
+
+.file__tab {
+  position: absolute;
+  top: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.file__body--on .file__tab {
+  color: var(--paper);
+}
+
+.file__body .sheet {
+  margin: 0;
+}
+
+/* ---------- the loose one ---------- */
+
+.file {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* lying on the desk it is flat: its layers stack in the ordinary way, which
+   is what lets a turning page sit on top of it */
+.cab--read .file {
+  transform-style: flat;
+}
+
+.cab--busy .file,
+.cab--drawer .file {
+  will-change: transform;
+  user-select: none;
+}
+
+/* held beside the open drawer: click it to put the drawer away again */
+.cab--drawer .file {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* On the desk the folder is one flat piece you can read and select from.
+   Off the desk that piece is hidden to show the same drawing cut into strips,
+   each hinged to the last, so it can bend. The strips are always there
+   underneath, already drawn, so picking the folder up costs nothing. */
+.file__flat {
+  position: relative;
+  z-index: 1;
+}
+
+.file__flex {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.cab--busy .file__flat,
+.cab--drawer .file__flat {
+  visibility: hidden;
+}
+
+.file__seg {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+}
+
+.file__win {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* a hair of overlap hides the seam between strips */
+  height: calc(var(--hb) + 1px);
+  overflow: hidden;
+}
+
+.file__shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  will-change: opacity;
+  pointer-events: none;
+}

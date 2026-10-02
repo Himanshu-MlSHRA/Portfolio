@@ -1,0 +1,15 @@
+:root {
+  --desk: #f1f0ec;
+  --card: #f8f7f3;
+  --paper: #fdfdfb;
+  --ink: #111111;
+  --redact: #1c1c1c;
+
+  /* still used by the intro */
+  --red: #7c1d1a;
+  --red-bright: #b3241f;
+
+  --font-mono: "JetBrains Mono", "Courier Prime", "Courier New", monospace;
+  --font-display: "Archivo Black", "Arial Black", sans-serif;
+  --font-type: var(--font-mono);
+}

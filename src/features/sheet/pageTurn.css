@@ -1,0 +1,70 @@
+/* A sheet turning over the top of its folder. See PageTurn.tsx. */
+
+.turn {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  /* a long lens: the leaf swings a full sheet's length toward the viewer */
+  perspective: 5200px;
+  perspective-origin: 50% 480px;
+  pointer-events: none;
+}
+
+.turn__arm,
+.turn__seg {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.turn__arm {
+  top: 0;
+}
+
+/* each strip has a printed face and a blank back; only the side turned
+   toward the viewer is drawn */
+.turn__face,
+.turn__back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* a hair of overlap hides the seam between strips */
+  height: calc(var(--strip) + 1px);
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+.turn__face .sheet {
+  margin: 0;
+  /* the black backing sheet stays in the folder */
+  box-shadow: none;
+}
+
+.turn__back {
+  background: var(--paper);
+  border: solid var(--ink);
+  border-width: 0 1.5px;
+  transform: rotateX(180deg);
+}
+
+.turn__shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.turn__shadow {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+  opacity: 0;
+  will-change: transform, opacity;
+}

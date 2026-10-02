@@ -1,0 +1,277 @@
+.cab {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--desk);
+  /* photocopier specks */
+  background-image:
+    radial-gradient(circle at 6% 42%, #111 0 1.2px, transparent 1.6px),
+    radial-gradient(circle at 93% 16%, #111 0 1px, transparent 1.4px),
+    radial-gradient(circle at 88% 71%, #111 0 1.4px, transparent 1.8px),
+    radial-gradient(circle at 14% 88%, #111 0 0.9px, transparent 1.3px),
+    radial-gradient(circle at 71% 4%, #111 0 0.9px, transparent 1.3px),
+    radial-gradient(circle at 34% 96%, #111 0 1.1px, transparent 1.5px);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  perspective: 1800px;
+  perspective-origin: 50% 35%;
+}
+
+/* ---------- top bar ---------- */
+
+.cab__bar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 90;
+  height: 52px;
+  padding: 0 clamp(14px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--desk);
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.cab__bar-id i {
+  font-style: normal;
+  opacity: 0.5;
+}
+
+.cab__bar-end {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cab__snd {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  opacity: 0.75;
+}
+
+.cab__snd:hover,
+.cab__snd:focus-visible {
+  opacity: 1;
+}
+
+.cab__snd svg {
+  width: 22px;
+  height: 18px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cab__snd path:first-child {
+  fill: var(--ink);
+}
+
+.cab__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 7px 10px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s;
+}
+
+.cab__btn svg {
+  width: 26px;
+  height: 19px;
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cab__res svg {
+  width: 17px;
+  height: 19px;
+}
+
+.cab__btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.cab__btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.cab--busy .cab__btn,
+.cab--resume .cab__menu {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* ---------- drawer pieces ---------- */
+
+/* every piece is laid out upright at the corner of the screen and then moved
+   into place by a transform (which starts with the quarter turn when the
+   drawer lies sideways) */
+.cab__static,
+.cab__card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* While the folder is being read the drawer is parked just off screen rather
+   than hidden, so it is already drawn when it rolls out. */
+
+.cab__walls {
+  z-index: 5;
+}
+
+.cab__panel,
+.cab__caption {
+  z-index: 60;
+}
+
+.cab__static polyline,
+.cab__line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.cab__panel .cab__line:not(:first-of-type) {
+  fill: var(--card);
+}
+
+.cab__fill {
+  fill: var(--card);
+}
+
+/* A folder standing in the drawer: the full drawing, cut off under the front
+   panel. Its box never changes size, so moving it is only ever a transform. */
+.cab__card {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cab__filed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  user-select: none;
+}
+
+/* everything of a folder that shows — its tab and the strip of it standing
+   proud of the folder in front — selects it */
+.cab__hit {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  padding: 0;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.cab__hit:focus-visible {
+  outline: none;
+}
+
+.cab__card:has(.cab__hit:hover) .file__tab,
+.cab__card:has(.cab__hit:focus-visible) .file__tab {
+  /* an underline only: changing the weight would re-lay the label out */
+  text-decoration: underline;
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.3em;
+}
+
+.cab--busy .cab__hit {
+  pointer-events: none;
+}
+
+/* one line of instructions under the drawer */
+.cab__caption {
+  position: absolute;
+  left: 22px;
+  bottom: 9px;
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(8px, 1.1vh, 10px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- the loose folder's layer ---------- */
+
+.cab__wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  padding: 74px 0 110px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.cab__wrap::-webkit-scrollbar {
+  display: none;
+}
+
+/* same vanishing point as the drawer, so a folder standing in its slot leans
+   exactly as its neighbours do */
+.cab--busy .cab__wrap,
+.cab--drawer .cab__wrap {
+  overflow: hidden;
+  pointer-events: none;
+  perspective: 1800px;
+  perspective-origin: 50% 35%;
+}
+
+.cab__shadow {
+  position: absolute;
+  background: #000;
+  filter: blur(26px);
+  opacity: 0;
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+
+/* a phone has room for the three buttons and not much else */
+@media (max-width: 560px) {
+  .cab__bar-now,
+  .cab__bar-id span {
+    display: none;
+  }
+
+  .cab__bar-end {
+    gap: 10px;
+  }
+
+  .cab__bar .cab__btn {
+    gap: 8px;
+    padding: 7px 10px 7px 8px;
+  }
+}
