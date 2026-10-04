@@ -234,6 +234,21 @@
   user-select: none;
 }
 
+/* black like a bar, but the words still show through */
+.tab {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.1em 0.45em;
+  letter-spacing: 0.08em;
+}
+
+/* a figure crossed out and corrected beside it, by hand */
+.struck {
+  text-decoration-thickness: 2px;
+  margin-right: 0.5em;
+  opacity: 0.6;
+}
+
 .cols3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -293,6 +308,18 @@
   font-weight: 800;
   line-height: 1;
   padding: 0 0.4em;
+}
+
+/* the subject's own correction: the line at the top of his hair is 6'0", not 5'11" */
+.mug__line--tall {
+  border-bottom-width: 3px;
+  font-size: 0.78em;
+}
+
+.mug__line--struck span {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  opacity: 0.55;
 }
 
 .mug img {
@@ -616,6 +643,11 @@ button.poster:hover {
   line-height: 1.55;
 }
 
+/* the asides in a ledger note sit on tight lines: a slimmer bar keeps off the line above */
+.ledger__row p .rd {
+  padding: 0.08em 0;
+}
+
 /* ---------- skills ---------- */
 
 .skills {
@@ -660,6 +692,108 @@ button.poster:hover {
   text-decoration: none;
   overflow-wrap: anywhere;
   line-height: 1.2;
+}
+
+.contact__acts {
+  margin: -0.6em 0 2em;
+}
+
+.statement {
+  display: grid;
+  gap: 0.9em;
+  justify-items: start;
+}
+
+.statement label {
+  display: flex;
+  gap: 0.7em;
+  width: 100%;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 0.4em;
+  font-size: 1.12em;
+  font-weight: 800;
+}
+
+.statement__msg {
+  flex-direction: column;
+}
+
+.statement input,
+.statement textarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+  outline: none;
+}
+
+.statement textarea {
+  border: 1.5px solid var(--ink);
+  padding: 0.6em;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.statement input::placeholder,
+.statement textarea::placeholder {
+  color: var(--ink);
+  opacity: 0.4;
+}
+
+.statement__trap {
+  display: none;
+}
+
+.statement__err {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.statement .act:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* while the slip is out of the page, the rest of the form waits behind it */
+.statement--bagging textarea {
+  visibility: hidden;
+}
+
+.statement--bagging label,
+.statement--bagging .act {
+  opacity: 0.3;
+  transition: opacity 0.4s;
+}
+
+@keyframes stamp-slam {
+  from {
+    transform: rotate(-6deg) scale(2.4);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: rotate(-6deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.statement__filed .stamp {
+  position: static;
+  display: inline-block;
+  margin: 0.4em 0 1.2em;
+  transform: rotate(-6deg);
+  font-size: 1.8em;
+  animation: stamp-slam 0.18s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+.statement textarea:focus-visible {
+  box-shadow: 3px 3px 0 var(--ink);
 }
 
 .hours__title {

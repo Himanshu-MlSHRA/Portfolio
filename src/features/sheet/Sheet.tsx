@@ -1,10 +1,13 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
+import { sfx } from "../../audio/sfx";
+import EvidenceBag from "../evidence/EvidenceBag";
 import {
   ABOUT,
   BLOGS,
   CONTACT,
   EDUCATION,
   EXPERIENCE,
+  HONOURS,
   PROFILE,
   PROJECTS,
   SEALED_PROJECT,
@@ -13,19 +16,32 @@ import {
   SKILLS_NOTE,
   SKILLS_SUMMARY,
   SUBJECT,
+  type Entry,
   type SectionDef,
 } from "../../data/content";
 import "./sheet.css";
 
-/** Renders text, turning every [[bracketed]] run into a black redaction bar. */
+/**
+ * Renders text, turning every [[bracketed]] run into a black redaction bar,
+ * every ~~tilded~~ run into a struck-out correction, and every ==marked== run
+ * into a black tab that can still be read.
+ */
 function Rd({ text }: { text: string }) {
   return (
     <>
-      {text.split(/(\[\[.*?\]\])/g).map((part, i) =>
+      {text.split(/(\[\[.*?\]\]|~~.*?~~|==.*?==)/g).map((part, i) =>
         part.startsWith("[[") ? (
           <span key={i} className="rd" aria-label="redacted">
             {part.slice(2, -2)}
           </span>
+        ) : part.startsWith("~~") ? (
+          <s key={i} className="struck">
+            {part.slice(2, -2)}
+          </s>
+        ) : part.startsWith("==") ? (
+          <mark key={i} className="tab">
+            {part.slice(2, -2)}
+          </mark>
         ) : (
           <span key={i}>{part}</span>
         ),
@@ -81,7 +97,66 @@ interface PageProps {
   onTurn?: (to: number) => void;
 }
 
-const CHART = [190, 186, 182, 178, 174, 170, 166, 162, 158, 154, 150, 146, 142];
+/** The height chart behind the mugshot, in inches from the top line down. */
+const CHART = Array.from({ length: 13 }, (_, i) => 73 - i);
+/** 6'0" is the line level with the top of the hair; the 5'11" under it is crossed out. */
+const TALL = 72;
+
+const feet = (n: number) => `${Math.floor(n / 12)}'${n % 12}"`;
+
+/** One ledger of entries: when, what, where, a note, and any links. */
+function Ledger({ rows }: { rows: Entry[] }) {
+  return (
+    <div className="ledger">
+      {rows.map((e) => (
+        <div key={e.role} className="ledger__row">
+          <div className="ledger__when">
+            <Rd text={e.period} />
+          </div>
+          <div>
+            <b>
+              <Rd text={e.role} />
+            </b>
+            <div className="entry__org">
+              <Rd text={e.org} />
+            </div>
+            <p>
+              <Rd text={e.note} />
+            </p>
+            {e.links && (
+              <div className="exhibit__acts">
+                {e.links.map((l) => (
+                  <a key={l.href} className="act act--line" href={l.href} target="_blank" rel="noreferrer">
+                    {l.label} ↗
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** The short form of a few entries, as listed on the profile sheet. */
+function Entries({ rows }: { rows: { title: string; period: string; org: string }[] }) {
+  return rows.map((e) => (
+    <div key={e.title} className="entry">
+      <div className="entry__top">
+        <b>
+          <Rd text={e.title} />
+        </b>
+        <span>
+          <Rd text={e.period} />
+        </span>
+      </div>
+      <div className="entry__org">
+        <Rd text={e.org} />
+      </div>
+    </div>
+  ));
+}
 
 function ProfilePage() {
   return (
@@ -94,9 +169,12 @@ function ProfilePage() {
         <div className="mug">
           <div className="mug__chart">
             {CHART.map((n) => (
-              <div key={n} className="mug__line">
-                <span>{n}</span>
-                <span>{n}</span>
+              <div
+                key={n}
+                className={n === TALL ? "mug__line mug__line--tall" : n === TALL - 1 ? "mug__line mug__line--struck" : "mug__line"}
+              >
+                <span>{feet(n)}</span>
+                <span>{feet(n)}</span>
               </div>
             ))}
           </div>
@@ -120,37 +198,13 @@ function ProfilePage() {
       <div className="split split--even">
         <div>
           <Heading>Experience</Heading>
-          {EXPERIENCE.slice(0, 2).map((e, i) => (
-            <div key={i} className="entry">
-              <div className="entry__top">
-                <b>
-                  <Rd text={e.role} />
-                </b>
-                <span>
-                  <Rd text={e.period} />
-                </span>
-              </div>
-              <div className="entry__org">
-                <Rd text={e.org} />
-              </div>
-            </div>
-          ))}
+          <Entries rows={EXPERIENCE.slice(0, 3).map((e) => ({ ...e, title: e.role }))} />
         </div>
         <div>
           <Heading>Education</Heading>
-          {EDUCATION.map((e, i) => (
-            <div key={i} className="entry">
-              <div className="entry__top">
-                <b>{e.title}</b>
-                <span>
-                  <Rd text={e.period} />
-                </span>
-              </div>
-              <div className="entry__org">
-                <Rd text={e.org} />
-              </div>
-            </div>
-          ))}
+          <Entries rows={EDUCATION} />
+          <Heading>Hackathons</Heading>
+          <Entries rows={HONOURS.map((e) => ({ ...e, title: e.role }))} />
         </div>
       </div>
 
@@ -203,7 +257,11 @@ function AboutOriginPage() {
             </li>
           ))}
         </ul>
-        <blockquote className="quote">“{quote}”</blockquote>
+        <blockquote className="quote">
+          {quote.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </blockquote>
       </div>
     </div>
   );
@@ -387,40 +445,9 @@ function ExperiencePage() {
   return (
     <>
       <Heading>Service history</Heading>
-      <div className="ledger">
-        {EXPERIENCE.map((e, i) => (
-          <div key={i} className="ledger__row">
-            <div className="ledger__when">
-              <Rd text={e.period} />
-            </div>
-            <div>
-              <b>
-                <Rd text={e.role} />
-              </b>
-              <div className="entry__org">
-                <Rd text={e.org} />
-              </div>
-              <p>{e.note}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Heading>Education and courses</Heading>
-      <div className="ledger">
-        {EDUCATION.map((e, i) => (
-          <div key={i} className="ledger__row">
-            <div className="ledger__when">
-              <Rd text={e.period} />
-            </div>
-            <div>
-              <b>{e.title}</b>
-              <div className="entry__org">
-                <Rd text={e.org} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Ledger rows={EXPERIENCE} />
+      <Heading>Hackathons</Heading>
+      <Ledger rows={HONOURS} />
     </>
   );
 }
@@ -515,6 +542,155 @@ function BlogsPage() {
   );
 }
 
+type Filing = "open" | "sending" | "bagging" | "sent" | "failed";
+
+/**
+ * Sends a statement through Web3Forms, or, with no key set, opens the
+ * visitor's mail app with it written out instead.
+ */
+async function fileStatement(form: HTMLFormElement): Promise<boolean> {
+  const data = new FormData(form);
+  const name = String(data.get("name") ?? "").trim();
+  const email = String(data.get("email") ?? "").trim();
+  const message = String(data.get("message") ?? "").trim();
+  const subject = `Portfolio statement${name ? ` from ${name}` : ""}`;
+
+  if (!CONTACT.formKey) {
+    const body = email ? `${message}\n\n— ${name || "anonymous"} (${email})` : message;
+    window.location.href = `mailto:${SUBJECT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    return true;
+  }
+
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: CONTACT.formKey,
+        subject,
+        from_name: name || "Portfolio visitor",
+        name,
+        email,
+        message,
+        // Web3Forms' spam trap: a person never fills it in
+        botcheck: data.get("botcheck") ? true : "",
+      }),
+    });
+    return (await res.json()).success === true;
+  } catch {
+    return false;
+  }
+}
+
+/*
+ * Whether a statement has been filed. The contact sheet is drawn more than
+ * once (the copies the folder bends with when it is picked up, and the one
+ * standing in the drawer), so this lives outside any one of them: every copy
+ * shows the same thing and stays the same height.
+ */
+let filed = false;
+const filedWatchers = new Set<() => void>();
+function setFiled(next: boolean) {
+  filed = next;
+  filedWatchers.forEach((f) => f());
+}
+function watchFiled(f: () => void) {
+  filedWatchers.add(f);
+  return () => filedWatchers.delete(f);
+}
+
+/** The note left where the form was, once the statement is away. */
+function Filed({ onAgain, fresh }: { onAgain: () => void; fresh: boolean }) {
+  useEffect(() => {
+    // only the copy the statement was sent from makes the noise
+    if (fresh) sfx.play("stamp");
+  }, [fresh]);
+  return (
+    <div className="statement__filed">
+      <b className="stamp">FILED</b>
+      <p className="rdx">
+        <Rd text={CONTACT.sent} />
+      </p>
+      <button className="act act--line" onClick={onAgain}>
+        File another ▸
+      </button>
+    </div>
+  );
+}
+
+
+function Statement() {
+  const [state, setState] = useState<Filing>("open");
+  const box = useRef<HTMLTextAreaElement>(null);
+  const [bagged, setBagged] = useState<{ source: HTMLTextAreaElement; name: string } | null>(null);
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    setState("sending");
+    if (!(await fileStatement(form))) return setState("failed");
+    // the statement is bagged as evidence, unless the visitor would rather nothing moved
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !box.current) {
+      setState("sent");
+      return setFiled(true);
+    }
+    setBagged({ source: box.current, name: String(new FormData(form).get("name") ?? "").trim() });
+    setState("bagging");
+  }
+
+  const isFiled = useSyncExternalStore(watchFiled, () => filed);
+  if (isFiled) {
+    return (
+      <Filed
+        fresh={state === "sent"}
+        onAgain={() => {
+          setState("open");
+          setFiled(false);
+        }}
+      />
+    );
+  }
+
+  return (
+    <form className={state === "bagging" ? "statement statement--bagging" : "statement"} onSubmit={onSubmit}>
+      {state === "bagging" && bagged && (
+        <EvidenceBag source={bagged.source} name={bagged.name} onDone={() => {
+            setState("sent");
+            setFiled(true);
+          }}
+        />
+      )}
+      <label>
+        <span>NAME:</span>
+        <input name="name" autoComplete="name" placeholder="optional, like your interest" />
+      </label>
+      <label>
+        <span>EMAIL:</span>
+        <input name="email" type="email" required autoComplete="email" placeholder="so he can reply, eventually" />
+      </label>
+      <label className="statement__msg">
+        <span>STATEMENT:</span>
+        <textarea
+          ref={box}
+          name="message"
+          rows={6}
+          required
+          placeholder="a review, an offer, a complaint about the animations…"
+        />
+      </label>
+      <input type="checkbox" name="botcheck" className="statement__trap" tabIndex={-1} aria-hidden="true" />
+      {state === "failed" && (
+        <p className="statement__err">
+          <Rd text={CONTACT.failed} />
+        </p>
+      )}
+      <button className="act" type="submit" disabled={state === "sending" || state === "bagging"}>
+        {state === "sending" ? "Filing…" : "File statement ▸"}
+      </button>
+    </form>
+  );
+}
+
 function ContactPage() {
   return (
     <>
@@ -522,6 +698,18 @@ function ContactPage() {
       <a className="bigmail" href={`mailto:${SUBJECT.email}`}>
         {SUBJECT.email}
       </a>
+      <div className="exhibit__acts contact__acts">
+        {CONTACT.links.map((l) => (
+          <a
+            key={l.label}
+            className="act"
+            href={l.href}
+            {...(l.href.startsWith("http") && { target: "_blank", rel: "noreferrer" })}
+          >
+            {l.label} {l.href.startsWith("http") ? "↗" : "▸"}
+          </a>
+        ))}
+      </div>
       <div className="split split--even">
         <Fields rows={CONTACT.fields} />
         <div className="hours">
@@ -545,6 +733,12 @@ function ContactPage() {
           </div>
         </div>
       </div>
+
+      <Heading>Leave a statement</Heading>
+      <p className="rdx">
+        <Rd text={CONTACT.sigh} />
+      </p>
+      <Statement />
     </>
   );
 }

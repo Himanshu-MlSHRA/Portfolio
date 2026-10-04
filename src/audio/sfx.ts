@@ -388,7 +388,84 @@ export function createKit(ctx: BaseAudioContext, out: AudioNode) {
     noise({ t, dur: 0.02, env: [[0.05, 0.4]], freq: 3400, q: 1.5 });
   }
 
+  /* ---------- the evidence bag ---------- */
+
+  /** A fold pressed flat with a thumbnail: a short slide, then the fibres giving way along the crease. */
+  function crease() {
+    const t = now();
+    noise({ t, dur: 0.16, env: [[0.3, 0.22], [0.8, 0.08]], freq: 900, freqTo: 2200, q: 0.8 });
+    noise({ t: t + 0.05, dur: 0.12, env: [[0.1, 0.4]], type: "highpass", freq: 2800, crisp: true });
+    crackle(10, 0.13, 0.42, t + 0.06);
+  }
+
+  /**
+   * One crease in a sheet of polythene: thinner and stiffer than paper, so
+   * each snap is shorter, brighter and louder.
+   */
+  function snap(gain: number, t = now()) {
+    noise({
+      t,
+      dur: rand(0.003, 0.009),
+      env: [[0.05, gain * rand(0.5, 1)]],
+      freq: rand(3800, 11000),
+      q: rand(2, 6),
+      pan: rand(-0.5, 0.5),
+    });
+  }
+
+  /** Called every frame while the bag is moving: the more it flexes, the more it crackles. */
+  function plastic(energy: number, frame: number) {
+    if (Math.random() < Math.min(70, 26 * energy) * frame) snap(Math.min(0.42, 0.1 + 0.2 * energy));
+  }
+
+  /** The bag taking a knock: the film buckling all at once, plus whatever hit it. */
+  function crumple(strength = 1) {
+    const t = now();
+    noise({ t, dur: 0.22, env: [[0.04, 0.45 * strength], [0.45, 0.12 * strength]], type: "highpass", freq: 3400, crisp: true, rate: 1.5 });
+    tone({ t, dur: 0.1, from: 150, to: 70, gain: 0.2 * strength });
+    for (let i = 0; i < 16 * strength; i++) snap(0.4 * strength, t + Math.random() ** 2 * 0.25);
+  }
+
+  /** The two lips of the seal being pulled apart, and a breath of air into the bag. */
+  function bagOpen() {
+    const t = now();
+    for (let i = 0; i < 9; i++) snap(0.32, t + (i / 9) ** 1.4 * 0.13);
+    noise({ t: t + 0.04, dur: 0.18, env: [[0.2, 0.2]], type: "lowpass", freq: 700, brown: true });
+  }
+
+  /**
+   * The slider run along the seal. Every tooth is its own click, placed at an
+   * even step of distance along the slider's sine in-out run, so they come
+   * fastest in the middle — the same curve the picture uses.
+   */
+  function zip(dur: number) {
+    const t = now();
+    const TEETH = 42;
+    for (let i = 1; i < TEETH; i++) {
+      const at = t + (Math.acos(1 - (2 * i) / TEETH) / Math.PI) * dur;
+      noise({ t: at, dur: 0.006, env: [[0.1, rand(0.25, 0.42)]], freq: rand(2500, 3600), q: 3 });
+      tone({ t: at, dur: 0.01, from: 1700, to: 1050, gain: 0.04 });
+    }
+    noise({ t, dur, env: [[0.3, 0.12], [0.7, 0.12]], type: "highpass", freq: 5200, crisp: true });
+    // the slider hitting the end of the track
+    noise({ t: t + dur, dur: 0.03, env: [[0.05, 0.5]], freq: 2100, q: 2 });
+    tone({ t: t + dur, dur: 0.05, from: 900, to: 500, gain: 0.08 });
+  }
+
+  /** A sheet of plastic pulled through the air. */
+  function whoosh(dur: number) {
+    const t = now();
+    noise({ t, dur, env: [[0.35, 0.4], [0.75, 0.15]], freq: 380, freqTo: 1500, q: 0.7 });
+    noise({ t, dur: dur * 0.8, env: [[0.3, 0.22]], type: "highpass", freq: 4200, crisp: true, rate: 1.4 });
+  }
+
   return {
+    crease,
+    plastic,
+    crumple,
+    bagOpen,
+    zip,
+    whoosh,
     rustle,
     paper,
     paperSwish,

@@ -48,7 +48,6 @@ export const RESUME = {
 
 export const SUBJECT = {
   name: "Himanshu Mishra",
-  alias: "Anshu",
   dob: "20/10/2005",
   origin: "Vasai, Mumbai",
   occupation: "Developer",
@@ -61,8 +60,10 @@ export const SUBJECT = {
 /*
  * Everything below is FILLER written in the dossier voice so the layout has
  * something real-looking to hold. Swap for real details section by section.
- * Done so far: ABOUT and the skills folder.
- * Text inside [[double brackets]] renders as a black redaction bar.
+ * Done so far: profile, about, projects, experience, skills and contact.
+ * Text inside [[double brackets]] renders as a black redaction bar, text
+ * inside ~~tildes~~ is printed struck through, and text inside ==equals== is
+ * printed white on a black tab, still readable.
  */
 
 export const PROFILE = {
@@ -70,27 +71,28 @@ export const PROFILE = {
   sruId: "HM-007",
   fields: [
     ["NAME", "HIMANSHU MISHRA"],
-    ["ALIAS", "ANSHU"],
-    ["ROLE", "DEVELOPER — FRONT-END / UI"],
+    ["ROLE", "FULL-STACK DEVELOPER"],
     ["BASE", "VASAI, MUMBAI, INDIA"],
     ["D.O.B", "20 / 10 / 2005"],
-    ["EDUCATION", "B.E. — INFORMATION TECHNOLOGY"],
+    ["HEIGHT", "~~5'11\"~~ 6'0\""],
+    ["WEIGHT", "55 KG"],
+    ["EDUCATION", "B.E. — INFORMATION TECHNOLOGY, 2027"],
     ["STATUS", "OPEN TO WORK"],
   ] as [string, string][],
   summary:
-    'THE SUBJECT OPERATING UNDER THE ALIAS "ANSHU" IS A [[twenty year old with far too many browser tabs open and]] DEVELOPER WITH CORE EXPERTISE IN FRONT-END ENGINEERING [[which is a polite way of saying subject argues with css for sport]] INTERFACE DESIGN, MOTION, AND THE BUILDING OF THINGS THAT FEEL ALIVE. FIRST FLAGGED IN 2022 [[developer division, case officer unknown]] CURRENTLY PURSUING B.E. IN INFORMATION TECHNOLOGY [[at an institution withheld pending review]] AND AVAILABLE FOR INTERNSHIPS, FREELANCE AND FULL-TIME ASSIGNMENTS.',
+    "THE SUBJECT IS A FULL-STACK DEVELOPER AND A FINAL-YEAR B.E. INFORMATION TECHNOLOGY STUDENT [[class of 2027, attendance record sealed]] WHO BUILDS FOR THE WEB FROM END TO END: REACT AND TYPESCRIPT ON THE FRONT, NODE.JS, EXPRESS AND MONGODB OR SQL BEHIND IT, AND AI MODELS WIRED INTO REAL PRODUCTS. ON RECORD: A FULL-STACK INTERNSHIP AT SARVAPRIYA FOUNDATION, MORE THAN FIVE CLIENT PROJECTS DELIVERED AS A FREELANCER, AND FINALIST AT TWO HACKATHONS, ONE OF THEM HACKSAGON 2026 AGAINST MORE THAN 200 TEAMS. [[sources describe him as hard to stop once started]] HE LEARNS FAST, SHIPS ON TIME AND ASKS BEFORE GUESSING. AVAILABLE FOR INTERNSHIPS, FREELANCE WORK AND FULL-TIME ROLES.",
   columns: [
     {
       title: "STACK",
-      body: "react, typescript, javascript, html / css, vite, gsap, framer motion.",
+      body: "react, typescript, javascript, node.js, express, mongodb, sql, python, c++, gsap.",
     },
     {
       title: "TOOLS",
-      body: "linux (omarchy build), terminal over gui, git, figma. will not be separated from the keyboard.",
+      body: "git / github, docker, postman, figma, linux. terminal over gui, always.",
     },
     {
       title: "FOCUS",
-      body: "interfaces with weight and physics, design that borders on obsession, shipping things that mostly work.",
+      body: "full-stack web apps, real-time features, ai integrations, and interfaces with motion that feels alive.",
     },
   ],
   likes: "linux, terminals, motion that obeys physics, design rabbit holes, half-finished side projects.",
@@ -125,7 +127,10 @@ export const ABOUT = {
       ["AT HOME", "HINDI"],
     ] as [string, string][],
     notes: ["Average on paper", "Asks why", "Shy at first", "Curious anyway"],
-    quote: "This is not a portfolio. This is a case file.",
+    quote: [
+      "“If you don't believe you are the best, you'll never achieve all that you're capable of.”",
+      "— Cristiano Ronaldo",
+    ],
   },
 
   /** Page 2: school, junior college, and why engineering. */
@@ -299,37 +304,82 @@ export const SEALED_PROJECT = {
   status: "ACCESS NOT GRANTED",
 };
 
-export const EXPERIENCE = [
+export interface Entry {
+  period: string;
+  role: string;
+  org: string;
+  note: string;
+  /** buttons under the note */
+  links?: { label: string; href: string }[];
+}
+
+/**
+ * Work: the first entries are also the ones shown on the profile sheet.
+ * In these lists a bar never hides anything a reader needs: dates and facts
+ * stay in plain text, and the bars are only asides.
+ */
+export const EXPERIENCE: Entry[] = [
   {
-    period: "2022 — PRESENT",
-    role: "INDEPENDENT DEVELOPER",
-    org: "SELF-DIRECTED",
-    note: "designing and building web interfaces end to end. learning by breaking things on purpose.",
+    period: "MAY 2025 — ==PRESENT==",
+    role: "FULL-STACK DEVELOPER INTERN",
+    org: "SARVAPRIYA FOUNDATION",
+    note: "helps build and optimise the digital tools behind the foundation's community initiatives, across the front end and the back end. [[performance review withheld]]",
   },
   {
-    period: "[[0000 — 0000]]",
-    role: "[[position withheld]]",
-    org: "[[organisation withheld]]",
-    note: "record pending — add internships, freelance work and roles here.",
+    period: "==FREELANCE==",
+    role: "THE FABULOUS SCENTS",
+    org: "CLIENT PROJECT — REACT",
+    note: "designed and built the storefront's interface in react: every page, every component and every interaction a customer touches. [[the rest of the build was a classmate's work]] shipped and live.",
+    links: [{ label: "Visit site", href: "https://thefabulousscents.vercel.app/" }],
   },
   {
-    period: "[[0000 — 0000]]",
-    role: "[[position withheld]]",
-    org: "[[organisation withheld]]",
-    note: "record pending.",
+    period: "==ONGOING==",
+    role: "FREELANCE WEB DEVELOPER",
+    org: "SELF-EMPLOYED",
+    note: "designed, built and delivered web projects for more than five clients, from the first brief to the live site. [[client list sealed]]",
+  },
+  {
+    period: "2025 — 2026",
+    role: "EDITORIAL TEAM MEMBER",
+    org: "ACM STUDENT CHAPTER, M. H. SABOO SIDDIK COLLEGE OF ENGINEERING",
+    note: "designs and manages the promotional content for the chapter's coding events, technical workshops and hackathons, and works with the organising teams on outreach.",
+  },
+  {
+    period: "==ON CAMPUS==",
+    role: "HACKATHON MANAGEMENT",
+    org: "COLLEGE-LEVEL HACKATHONS",
+    note: "coordinated student teams and handled registrations, scheduling and event operations alongside the management and organising teams. [[sleep not recorded]]",
+  },
+];
+
+/** Hackathons. */
+export const HONOURS: Entry[] = [
+  {
+    period: "2026",
+    role: "FINALIST — HACKSAGON 2026",
+    org: "NATIONAL-LEVEL HACKATHON, ABV-IIITM IEEE STUDENT BRANCH",
+    note: "shortlisted as a finalist from more than 200 competing teams.",
+    links: [{ label: "Certificate", href: "/assets/resume/Hacksagoan.pdf" }],
+  },
+  {
+    period: "AUG 2026",
+    role: "FINALIST — VIBECODE 2.0",
+    org: "IEEE STUDENT BRANCH, M. H. SABOO SIDDIK COLLEGE OF ENGINEERING",
+    note: "finalist, 18 august 2026. [[the vibes were, reportedly, immaculate]]",
+    links: [{ label: "Certificate", href: "/assets/resume/VibeCode_Hackathon_Finalist.pdf" }],
   },
 ];
 
 export const EDUCATION = [
   {
-    period: "[[0000]] — PRESENT",
+    period: "2023 — 2027",
     title: "B.E. — INFORMATION TECHNOLOGY",
-    org: "[[institution withheld pending review]]",
+    org: "M. H. SABOO SIDDIK COLLEGE OF ENGINEERING",
   },
   {
-    period: "[[0000 — 0000]]",
-    title: "HIGHER SECONDARY",
-    org: "[[institution withheld pending review]]",
+    period: "2021 — 2023",
+    title: "HIGHER SECONDARY — SCIENCE",
+    org: "ST. ANNE'S CONVENT HIGH SCHOOL AND JUNIOR COLLEGE",
   },
 ];
 
@@ -431,13 +481,31 @@ export const BLOGS = [
 ];
 
 export const CONTACT = {
+  phone: "+91 7235034984",
+  /**
+   * Web3Forms access key (web3forms.com, free): with it the statement box
+   * sends straight to the inbox the key was made for. It is meant to sit in
+   * the page, so it is not a secret. Left empty, the box opens the visitor's
+   * mail app instead.
+   */
+  formKey: "",
+  links: [
+    { label: "GitHub", href: "https://github.com/Himanshu-MlSHRA" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/himanshu-mishra-b4577b20b/" },
+    { label: "Call", href: "tel:+917235034984" },
+    { label: "Email", href: `mailto:${SUBJECT.email}` },
+  ],
   fields: [
     ["EMAIL", SUBJECT.email],
-    ["GITHUB", "github.com/[[handle withheld]]"],
-    ["LINKEDIN", "linkedin.com/in/[[handle withheld]]"],
+    ["PHONE", "+91 72350 34984"],
     ["LOCATION", "VASAI, MUMBAI — IST (UTC+5:30)"],
     ["RESPONSE", "USUALLY WITHIN 24 HOURS"],
   ] as [string, string][],
+  /** printed above the message box */
+  sigh: "STATISTICALLY, YOU WILL READ THIS, NOD, AND CLOSE THE TAB. THE SUBJECT IS AWARE. HE LEFT THE BOX HERE ANYWAY. [[optimism is filed under unverified claims]] IF YOU DO WRITE, IT GOES STRAIGHT TO HIS INBOX AND HE WILL READ IT TWICE.",
+  /** printed in place of the box once a statement is sent */
+  sent: "STATEMENT FILED. THE SUBJECT HAS BEEN NOTIFIED AND IS NOW PRETENDING HE WAS NOT WAITING FOR THIS. [[he was]] EXPECT A REPLY WITHIN 24 HOURS, SOONER IF IT WAS A COMPLIMENT.",
+  failed: "THE STATEMENT DID NOT GO THROUGH. EITHER THE INTERNET OR FATE INTERVENED. TRY AGAIN, OR USE THE EMAIL ABOVE.",
   days: [
     ["MON", true],
     ["TUE", true],

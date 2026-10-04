@@ -620,6 +620,8 @@ export default function Cabinet({ active }: { active: boolean }) {
   useEffect(() => {
     const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
     const onKey = (e: KeyboardEvent) => {
+      // typing in the contact form is not a shortcut
+      if (e.target instanceof HTMLElement && e.target.closest("input, textarea")) return;
       if (resumeRef.current) {
         if (e.key === "Escape") void closeResume();
       } else if (e.key === "Escape" || e.key.toLowerCase() === "m") toggle();
@@ -633,6 +635,18 @@ export default function Cabinet({ active }: { active: boolean }) {
       gsap.ticker.remove(tick);
       gsap.killTweensOf([m, m.p]);
     };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // a sheet can change height while it lies on the desk (the contact form
+  // becoming a filed note): the strips it bends with are cut again to match
+  useEffect(() => {
+    const file = fileRef.current;
+    if (!file) return;
+    const watch = new ResizeObserver(() => {
+      if (m.mode === "read") measure();
+    });
+    watch.observe(file);
+    return () => watch.disconnect();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // the first folder slides onto the desk once the intro has finished
