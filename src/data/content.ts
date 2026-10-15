@@ -267,27 +267,27 @@ export const PROJECTS = [
     image: "/assets/images/projects/attendance.webp",
     kind: "FACE-RECOGNITION ATTENDANCE REGISTER",
     blurb:
-      "an automated attendance system on a python backend. it marks and manages attendance by itself, with tools for viewing and exporting daily records.",
-    stack: "PYTHON / FLASK / OPENCV",
-    fullStack: "PYTHON, FLASK, OPENCV, FACE_RECOGNITION, PANDAS, HTML, CSS, JAVASCRIPT",
+      "face-recognition attendance for a college. a webcam or a class photo marks everyone present, teachers get dashboards and reports, and students check in with their own face.",
+    stack: "PYTHON / FLASK / REACT",
+    fullStack: "PYTHON, FLASK, FACE_RECOGNITION, SQLITE, REACT, TYPESCRIPT, TAILWIND",
     filed: "2025",
     status: "LIVE",
     live: "smart-attendance-system-black.vercel.app",
     source: "github.com/Himanshu-MlSHRA/smart-attendance-system",
     report:
-      "AN ATTENDANCE REGISTER THAT TAKES ITSELF. A STUDENT IS ENROLLED BY BEING PHOTOGRAPHED [[fifty times]] AT A WEBCAM, AND A MODEL IS TRAINED ON THE PICTURES. FROM THEN ON THE SYSTEM WATCHES A LIVE CAMERA FEED, OR READS AN UPLOADED PHOTO OF THE CLASS, RECOGNISES WHO IS PRESENT, AND WRITES THEIR NAME, ROLL NUMBER, DEPARTMENT AND [[the exact time]] INTO THE RECORD.",
+      "AN ATTENDANCE REGISTER THAT TAKES ITSELF. A TEACHER STARTS A CLASS, AND THE WEBCAM, OR ONE PHOTO OF THE WHOLE ROOM, MARKS EVERYONE IT RECOGNISES. STUDENTS CAN ALSO CHECK IN FROM THEIR PHONE, BUT ONLY WITH THE CODE ON THE PROJECTOR AND ONLY IF THEY BLINK, SO [[a photo of a friend]] DOES NOT WORK. ADMINS, TEACHERS AND STUDENTS EACH GET THEIR OWN VIEW.",
     notes: [
       {
         title: "RECOGNITION",
-        body: "faces are found and matched with opencv and the face_recognition library, on every second frame to keep the feed quick.",
+        body: "faces are matched with the face_recognition library. new students are added to the model straight away, with no retraining.",
       },
       {
         title: "RECORDS",
-        body: "the register can be browsed, filtered, and viewed by month.",
+        body: "dashboards show turnout, late arrivals and students below 75%. students see their streak and how many classes they can still miss.",
       },
       {
         title: "EXPORT",
-        body: "the full register downloads as an excel sheet.",
+        body: "the register and each course sheet download as csv. a 23-test suite covers login, roles, scanning and check-in.",
       },
     ],
   },
